@@ -1,4 +1,4 @@
-namespace web_app.Models;
+namespace blazorWebApplication.Models;
 
 public class Product
 {

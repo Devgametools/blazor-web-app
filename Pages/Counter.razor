@@ -1,0 +1,40 @@
+﻿@page "/counter/{currentCountParameter:int?}"
+@inject ILogger<Counter> Logger;
+
+<PageTitle>Counter</PageTitle>
+
+<ModuleTitle Title="Counter"/>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    [Parameter]
+    public int? currentCountParameter { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        Logger.LogInformation("Counter component parameters.");
+    }
+
+    protected override void OnInitialized()
+    {
+        // Initialize the current count with the value from the URL parameter or set it to 0
+        currentCount = currentCountParameter.GetValueOrDefault(0);
+        Logger.LogInformation("Counter component initialized.");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        Logger.LogInformation("Counter component rendered.");
+    }
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+}
+

@@ -1,0 +1,16 @@
+@page "/products"
+@inject NavigationManager navigationManager
+
+<PageTitle>Products</PageTitle>
+
+<ModuleTitle Title="Products" />
+
+<button class="btn btn-primary" @onclick="goToAddProductPage">Add Product</button>
+
+<ProductList />
+
+
+@code
+{
+    private void goToAddProductPage() => navigationManager.NavigateTo("/products/addproduct");
+}

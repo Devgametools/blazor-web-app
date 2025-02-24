@@ -4,35 +4,63 @@
 @inject NavigationManager navigationManager
 @inject ILogger<AddProduct> Logger
 
+
 <PageTitle>Add Product</PageTitle>
 
 <ModuleTitle Title="Add Product" />
 
 <button class="btn btn-primary" @onclick="goToProductPage">Back</button>
 
-<EditForm Model="@product">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<EditForm Model="@product" OnSubmit="@Save">
+    <div class="row">
+        <div class="col form-group">
+            <label for="Title" class="col-form-label">Title</label>
+            <InputText id="Title" class="form-control" @bind-Value="product.Title" required />
+            <ValidationMessage For="@(() => product.Title)" />
+        </div>
 
-    <div class="col-8 form-group">
-        <label for="Title" class="col-form-label">Title</label>
-        <InputText id="Title" class="form-control" @bind-Value="product.Title" required />
-        <ValidationMessage For="@(() => product.Title)" />
+        <div class="col form-group">
+            <label for="Price" class="col-form-label">Price</label>
+            <InputNumber id="Price" min="0" class="form-control" @bind-Value="product.Price" required/>
+            <ValidationMessage For="@(() => product.Price)" />
+        </div>
     </div>
+
+    <div class="row">
+        <div class="col form-group">
+            <label for="category" class="col-form-label">Category</label>
+            <InputSelect id="category" @bind-Value="product.CategoryId" required class="form-control">
+                <option>Select Category...</option>
+                @foreach (var category in categories)
+                {
+                    <option value="@category.Id">@category.Name</option>
+                }
+            </InputSelect>
+        </div>
+    
+        <div class="col form-group">
+            <label for="image" class="col-form-label">Image (Url)</label>
+            <InputText id="image" @bind-Value="product.Image" required class="form-control" />
+        </div>
+    </div>
+
 
     <div class="form-group">
-        <label for="Description">Description</label>
-        <InputText id="Description" class="form-control" @bind-Value="product.Description" />
-        <ValidationMessage For="@(() => product.Description)" />
+        <label for="description" class="col-form-label">Description</label>
+        <InputTextArea id="description" @bind-Value="product.Description" required class="form-control"></InputTextArea>
     </div>
 
+    <hr />
+    <button class="btn btn-primary" type="submit">Save</button>
+    
+    <button class="btn btn-secondary" @onclick="goToProductPage">Cancel</button>
 </EditForm>
 
 @code{
     private void goToProductPage() => navigationManager.NavigateTo("/products");
 
     private Product product = new();
-    @* private List<Category> categories = new();
+    private List<Category> categories = new List<Category>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,9 +72,10 @@
         return await categoryService.Get();
     }
 
-    private async void HandleValidSubmit()
+    private async Task Save()
     {
+        product.Images = new string[1] { product.Image };
         await productService.Add(product);
         navigationManager.NavigateTo("/products");
-    } *@
+    }
 }

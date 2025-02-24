@@ -16,30 +16,36 @@ public class CategoryService: ICategoryService
         this.options = new JsonSerializerOptions{ PropertyNameCaseInsensitive = true };
     }
     
-    public async Task<List<Category>?> GetCategories()
+    public async Task<List<Category>> Get()
     {
         var response = await client.GetAsync("categories");
-        if (response.IsSuccessStatusCode)
+        var content = await response.Content.ReadAsStringAsync();
+        if (!response.IsSuccessStatusCode)
         {
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<List<Category>>(content, options);
+            throw new ApplicationException(content);            
         }
-        return null;
-    }
+        var categories = JsonSerializer.Deserialize<List<Category>>(content, options);
+        if (categories == null)
+        {
+            throw new ApplicationException("Error deserializing the category list.");
+        }
+        return categories;
 
-    public async Task AddCategory(Category category)
+   }
+
+    public async Task Add(Category category)
     {
         var content = new StringContent(JsonSerializer.Serialize(category, options), Encoding.UTF8, "application/json");
         await client.PostAsync("categories", content);
     }
 
-    public async Task UpdateCategory(Category category)
+    public async Task Update(Category category)
     {
         var content = new StringContent(JsonSerializer.Serialize(category, options), Encoding.UTF8, "application/json");
         await client.PutAsync($"categories/{category.Id}", content);
     }
 
-    public async Task DeleteCategory(int id)
+    public async Task Delete(int id)
     {
         await client.DeleteAsync($"categories/{id}");
     }
@@ -48,8 +54,8 @@ public class CategoryService: ICategoryService
 
 public interface ICategoryService
 {
-    Task<List<Category>?> GetCategories();
-    Task AddCategory(Category category);
-    Task UpdateCategory(Category category);
-    Task DeleteCategory(int id);
+    Task<List<Category>> Get();
+    Task Add(Category category);
+    Task Update(Category category);
+    Task Delete(int id);
 }

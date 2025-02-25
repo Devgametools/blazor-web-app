@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using blazorWebApplication.Models;
@@ -37,10 +38,12 @@ public class ProductService: IProductService
 
     public async Task Add(Product product)
     {
-        var content = new StringContent(JsonSerializer.Serialize(product, options), 
-        Encoding.UTF8, "application/json");
-        
-        await client.PostAsync("products", content);
+            var response = await client.PostAsync("products", JsonContent.Create(product));
+            var content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
     }
 
     public async Task Update(Product product)

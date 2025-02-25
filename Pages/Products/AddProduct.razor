@@ -74,7 +74,7 @@
 
     private async Task Save()
     {
-        product.Images = new string[1] { product.Image };
+        product.Images = new string[1] { product.Image ?? string.Empty };
         await productService.Add(product);
         navigationManager.NavigateTo("/products");
     }

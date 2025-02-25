@@ -28,12 +28,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        products = await GetProducts();
+        await GetProducts();
     }
 
-    private async Task<List<Product>> GetProducts()
+    private async Task GetProducts()
     {
-        return await productService.Get();
+        products = await productService.Get();
     }
 
     private async Task DeleteProduct(Product product)
@@ -43,7 +43,7 @@ else
         if (confirmation)
         {
             await productService.Delete(product.Id);
-            products = await GetProducts();
+            await GetProducts();
         }
     }
 }
